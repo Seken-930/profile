@@ -1,0 +1,33 @@
+ステップ1：コードを App.jsx に配置する
+先ほど私が書いたコードは、画面全体の部品（コンポーネント）です。
+Viteプロジェクトの src フォルダの中にある App.jsx というファイルを開き、元々書かれているコードをすべて消して、先ほどのコードを丸ごと貼り付けて保存します。
+
+ステップ2：Tailwind CSS の導入（塗装の準備）
+className="bg-white text-gray-800 p-6" のような記述は、Tailwind CSSというツールが入っていないと、ただの無意味な文字列になってしまい、デザインが真っ白になってしまいます。
+
+もし今の環境にまだTailwindが入っていない場合は、ターミナルで以下のコマンドを打ち込んでインストールします。
+
+Bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+すると tailwind.config.js というファイルが作られるので、それを開いて以下のように content の部分を書き換えます（ReactのファイルでTailwindを使えるようにする設定です）。
+
+JavaScript
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}", // ← ここを追記！
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+ステップ3：CSSファイルにTailwindを読み込ませる
+最後に、src/index.css（または App.css）を開きます。
+元から書かれているCSSのコードをすべて削除して、以下の3行だけを貼り付けて保存します。
+
+CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
