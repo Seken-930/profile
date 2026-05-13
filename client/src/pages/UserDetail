@@ -1,0 +1,129 @@
+import React from "react";
+// 💡 react-router-dom ではなく react-router からインポート！
+import { useParams, useNavigate } from "react-router";
+import { ArrowLeft, Mail, Briefcase, Calendar, Target } from "lucide-react";
+
+// 安全のため相対パス（../）でインポート
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import dummyUsers from "../data/dummyUsers.json";
+import { User } from "../models/user";
+
+export default function UserDetailPage() {
+  const { id } = useParams(); // URLから "/user/1" の "1" を取得する魔法のフック
+  const navigate = useNavigate();
+
+  // URLのIDと一致するユーザーをダミーデータから探し出す
+  const user = (dummyUsers as User[]).find((u) => u.id === id);
+
+  // ユーザーが見つからなかった場合のエラー画面
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 space-y-4">
+        <h2 className="text-xl font-bold text-slate-800">社員が見つかりませんでした</h2>
+        <Button onClick={() => navigate(-1)} variant="outline">
+          <ArrowLeft className="mr-2 h-4 w-4" /> 前の画面に戻る
+        </Button>
+      </div>
+    );
+  }
+
+  // ユーザーが見つかった場合のプロフィール画面
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* 戻るボタン */}
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center text-sm text-slate-500 hover:text-blue-600 transition-colors"
+      >
+        <ArrowLeft className="mr-1 h-4 w-4" />
+        一覧へ戻る
+      </button>
+
+      {/* プロフィールヘッダー */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+          <Avatar className="h-24 w-24 border-4 border-white shadow-md shrink-0">
+            <AvatarImage src={user.avatar_url} alt={user.name} />
+            <AvatarFallback className="bg-blue-100 text-blue-700 text-2xl">
+              {user.name.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{user.name}</h1>
+              <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none">
+                {user.depatment}
+              </Badge>
+            </div>
+
+            <div className="flex flex-wrap gap-4 text-sm text-slate-600 pt-1">
+              <div className="flex items-center gap-1.5">
+                <Briefcase className="h-4 w-4 text-slate-400" />
+                {user.position}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Mail className="h-4 w-4 text-slate-400" />
+                {user.email}
+              </div>
+            </div>
+          </div>
+
+          <div className="shrink-0 w-full sm:w-auto mt-4 sm:mt-0">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700">
+              <Mail className="mr-2 h-4 w-4" /> メッセージを送る
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 詳細情報のグリッド */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* メインカラム（左側2/3） */}
+        <div className="md:col-span-2 space-y-6">
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center border-b pb-2">
+              自己紹介
+            </h3>
+            <p className="text-slate-600 whitespace-pre-wrap leading-relaxed">
+              {user.bio}
+            </p>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center border-b pb-2">
+              これまでの経歴
+            </h3>
+            <p className="text-slate-600 whitespace-pre-wrap leading-relaxed">
+              {user.career_summary}
+            </p>
+          </div>
+        </div>
+
+        {/* サイドカラム（右側1/3） */}
+        <div className="space-y-6">
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm">
+            <h3 className="text-md font-bold text-blue-900 mb-3 flex items-center gap-2">
+              <Target className="h-5 w-5" /> 今後やりたいこと
+            </h3>
+            <p className="text-blue-800 font-medium">
+              {user.want_to_do}
+            </p>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 shadow-sm space-y-3">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">
+              登録情報
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Calendar className="h-4 w-4 text-slate-400" />
+              <span>入社: {new Date(user.created_at).toLocaleDateString('ja-JP')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
