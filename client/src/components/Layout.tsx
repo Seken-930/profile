@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router";
 import { Home, Users, User, FileText, Plus, LogOut, Moon, Sun, ChevronsUpDown } from "lucide-react";
 import dummyUsers from "../data/dummyUsers.json";
@@ -87,7 +87,7 @@ export default function AppLayout() {
                 </div>
             </aside>
 
-            {/* メインコンテンツ */}
+            {/* メインコンテンツ領域 */}
             <main className="flex-1 h-full overflow-y-auto relative bg-slate-50/50 dark:bg-slate-950/20 pb-20">
                 <Outlet />
             </main>
