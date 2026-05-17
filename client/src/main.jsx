@@ -6,17 +6,18 @@ import './index.css'
 import Layout from './components/Layout'
 import UserListPage from './pages/UserListPage'
 import UserDetailPage from './pages/UserDetailPage'
+import PostDetailPage from "./pages/PostDetail.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <BrowserRouter>
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path="/" element={<UserListPage />} />
                     <Route path="/users" element={<UserListPage />} />
                     <Route path="/user/:id" element={<UserDetailPage />} />
-                    <Route path="/profile" element={<div className="p-10">プロフィール画面（開発中）</div>} />
-                    <Route path="/post" element={<div className="p-10">投稿画面（開発中）</div>} />
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/posts" element={<PostListPage />} />
+                    <Route path="/post/:id" element={<PostDetailPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
