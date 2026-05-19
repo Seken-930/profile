@@ -190,6 +190,7 @@ export default function ProfilePage() {
                         onChange={(e) => setEditForm({...editForm, want_to_do: e.target.value})}
                         className="w-full px-3 py-2 border border-slate-200 bg-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/20 text-xs"
                     />
+
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">自己紹介 (Bio)</label>
