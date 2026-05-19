@@ -206,6 +206,7 @@ export default function ProfilePage() {
                   <button onClick={() => setIsEditModalOpen(false)} className="px-3.5 py-1.5 text-slate-500 text-xs font-semibold rounded-lg hover:bg-slate-100">キャンセル</button>
                   <button onClick={handleSave} className="px-4 py-1.5 bg-simplex-green text-white text-xs font-bold rounded-lg shadow-sm">保存する</button>
                 </div>
+
               </div>
             </div>
         )}
