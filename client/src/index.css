@@ -1,105 +1,66 @@
 @import "tailwindcss";
 
+@layer base {
+    :root {
+        --simplex-green: #2A7A56;
+        --simplex-light: #EAF3EF;
+        --simplex-yellow: #F4B728;
+        --simplex-bg: #FBF9F5;
+        --simplex-surface: #FFFFFF;
+        --simplex-text: #333333;
+        --simplex-border: #e2e8f0;
+        --simplex-header-bg: #FCF5E8;
+        --simplex-accent-text: #B8860B;
+    }
+
+    .dark {
+        --simplex-green: #34d399;
+        --simplex-light: #064e3b;
+        --simplex-yellow: #fbbf24;
+        --simplex-bg: #0f172a;
+        --simplex-surface: #1e293b;
+        --simplex-text: #f8fafc;
+        --simplex-border: #334155;
+        --simplex-header-bg: #332716;
+        --simplex-accent-text: #fcd34d;
+    }
+}
+
 
 @theme inline {
-    --color-simplex-green: #2A7A56;
-    --color-simplex-light: #EAF3EF;
-    --color-simplex-yellow: #F4B728;
-    --color-simplex-yellowHover: #E0A620;
-    --color-simplex-bg: #FBF9F5;
-    --color-simplex-surface: #FFFFFF;
-    --color-simplex-text: #333333;
+    --color-simplex-green: var(--simplex-green);
+    --color-simplex-light: var(--simplex-light);
+    --color-simplex-yellow: var(--simplex-yellow);
+    --color-simplex-bg: var(--simplex-bg);
+    --color-simplex-surface: var(--simplex-surface);
+    --color-simplex-text: var(--simplex-text);
+    --color-simplex-border: var(--simplex-border);
+    --color-simplex-headerBg: var(--simplex-header-bg);
+    --color-simplex-accentText: var(--simplex-accent-text);
 
     @keyframes accordion-down {
-        from {
-            height: 0;
-        }
-        to {
-            height: var(
-                    --radix-accordion-content-height,
-                    var(--accordion-panel-height, auto)
-            );
-        }
+        from { height: 0; }
+        to { height: var(--radix-accordion-content-height, var(--accordion-panel-height, auto)); }
     }
-
     @keyframes accordion-up {
-        from {
-            height: var(
-                    --radix-accordion-content-height,
-                    var(--accordion-panel-height, auto)
-            );
-        }
-        to {
-            height: 0;
-        }
+        from { height: var(--radix-accordion-content-height, var(--accordion-panel-height, auto)); }
+        to { height: 0; }
     }
 }
 
-@custom-variant data-open {
-    &:where([data-state="open"]),
-    &:where([data-open]:not([data-open="false"])) {
-        @slot;
-    }
-}
 
-@custom-variant data-closed {
-    &:where([data-state="closed"]),
-    &:where([data-closed]:not([data-closed="false"])) {
-        @slot;
-    }
-}
-
-@custom-variant data-checked {
-    &:where([data-state="checked"]),
-    &:where([data-checked]:not([data-checked="false"])) {
-        @slot;
-    }
-}
-
-@custom-variant data-unchecked {
-    &:where([data-state="unchecked"]),
-    &:where([data-unchecked]:not([data-unchecked="false"])) {
-        @slot;
-    }
-}
-
-@custom-variant data-selected {
-    &:where([data-selected="true"]) {
-        @slot;
-    }
-}
-
-@custom-variant data-disabled {
-    &:where([data-disabled="true"]),
-    &:where([data-disabled]:not([data-disabled="false"])) {
-        @slot;
-    }
-}
-
-@custom-variant data-active {
-    &:where([data-state="active"]),
-    &:where([data-active]:not([data-active="false"])) {
-        @slot;
-    }
-}
-
-@custom-variant data-horizontal {
-    &:where([data-orientation="horizontal"]) {
-        @slot;
-    }
-}
-
-@custom-variant data-vertical {
-    &:where([data-orientation="vertical"]) {
-        @slot;
-    }
-}
+@custom-variant data-open { &:where([data-state="open"]), &:where([data-open]:not([data-open="false"])) { @slot; } }
+@custom-variant data-closed { &:where([data-state="closed"]), &:where([data-closed]:not([data-closed="false"])) { @slot; } }
+@custom-variant data-checked { &:where([data-state="checked"]), &:where([data-checked]:not([data-checked="false"])) { @slot; } }
+@custom-variant data-unchecked { &:where([data-state="unchecked"]), &:where([data-unchecked]:not([data-unchecked="false"])) { @slot; } }
+@custom-variant data-selected { &:where([data-selected="true"]) { @slot; } }
+@custom-variant data-disabled { &:where([data-disabled="true"]), &:where([data-disabled]:not([data-disabled="false"])) { @slot; } }
+@custom-variant data-active { &:where([data-state="active"]), &:where([data-active]:not([data-active="false"])) { @slot; } }
+@custom-variant data-horizontal { &:where([data-orientation="horizontal"]) { @slot; } }
+@custom-variant data-vertical { &:where([data-orientation="vertical"]) { @slot; } }
 
 @utility no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
+    &::-webkit-scrollbar { display: none; }
 }
