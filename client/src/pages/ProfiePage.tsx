@@ -4,7 +4,7 @@ import { useApi } from "../hooks/useApi";
 import { Profile } from "../types/profile"; // ※ファイルのパスは環境に合わせて調整してください
 import dummyPosts from "../data/dummyPosts.json";
 
-// 💡 バックエンドができるまでの仮のタグ一覧（モックデータ）
+// バックエンドができるまでの仮のタグ一覧（モックデータ）
 const AVAILABLE_TAGS = [
   { id: 1, name: "Client First" },
   { id: 2, name: "明るい" },
@@ -13,6 +13,28 @@ const AVAILABLE_TAGS = [
   { id: 5, name: "マネジメント" },
   { id: 6, name: "金融PJ経験" },
 ];
+
+const DUMMY_PROFILE: Profile = {
+  hrid: "100000",
+  name: "test@example.com",
+  email: "test.contact@example.com",
+  familyName: "山田",
+  givenName: "太郎",
+  department: "開発部",
+  position: "メンバー",
+  bio: "現在、フロントエンドの画面挙動をテスト中です。\nバックエンドが繋がるまではこのデータが表示されます。",
+  careerSummary: "2026年 開発プロジェクト参画",
+  wantToDo: "UI/UXの改善",
+  selfTag: [
+    { id: 1, name: "Client First" },
+    { id: 3, name: "React" }
+  ],
+  // 先ほどの照合テスト用に、dummyPosts.jsonの中にあるIDをいくつか入れておきます
+  posts: [
+    { id: "1", title: "ダミー", postTag: [] },
+    { id: "2", title: "ダミー", postTag: [] }
+  ]
+};
 
 export default function ProfilePage() {
   const api = useApi();
@@ -35,8 +57,14 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchMyProfile = async () => {
       try {
-        const response = await api.fetch("/api/auth/me");
-        setCurrentUser(response as Profile);
+        // const response = await api.fetch("/api/auth/me");
+        // const data = await response.json();
+        // setCurrentUser(response as Profile);
+
+        // テスト用！！！！！！
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setCurrentUser(DUMMY_PROFILE);
+
       } catch (error) {
         console.error("プロフィールの取得に失敗しました:", error);
       } finally {
@@ -47,7 +75,7 @@ export default function ProfilePage() {
     fetchMyProfile();
   }, [api]);
 
-  // 🚀 2. 編集モーダルを開く
+  // 2. 編集モーダルを開く
   const handleOpenEdit = () => {
     if (!currentUser) return;
     setEditForm({
@@ -90,10 +118,14 @@ export default function ProfilePage() {
         bio: editForm.bio,
         careerSummary: editForm.careerSummary,
         wantToDo: editForm.wantToDo,
-        selfTag: editForm.selfTag
+        selfTag: editForm.selfTag,
+        posts: currentUser.posts
       };
 
-      await api.sendJson("/api/auth/me", requestBody, { method: "PUT" });
+      // テスト用にコメントアウト！！！！！！！！
+      //await api.sendJson("/api/auth/me", requestBody, { method: "PUT" });
+
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       setCurrentUser(requestBody);
       setIsEditModalOpen(false);
