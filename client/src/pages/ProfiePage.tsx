@@ -1,40 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { Edit, X, Info, Award, Compass, FileText, User as UserIcon, Briefcase, Users, Loader2 } from "lucide-react";
+import {
+  Edit, X, User as UserIcon, Briefcase, Mail, Building,
+  CreditCard, FileText, Lightbulb, Loader2
+} from "lucide-react";
 import { useApi } from "../hooks/useApi";
-import { Profile } from "../types/profile"; // ※ファイルのパスは環境に合わせて調整してください
+import { Profile } from "../types/profile";
 import dummyPosts from "../data/dummyPosts.json";
 
-// バックエンドができるまでの仮のタグ一覧（モックデータ）
-const AVAILABLE_TAGS = [
-  { id: 1, name: "Client First" },
-  { id: 2, name: "明るい" },
-  { id: 3, name: "React" },
-  { id: 4, name: "TypeScript" },
-  { id: 5, name: "マネジメント" },
-  { id: 6, name: "金融PJ経験" },
-];
-
+// テスト用のダミープロフィールデータ
 const DUMMY_PROFILE: Profile = {
-  hrid: "100000",
-  name: "test@example.com",
-  email: "test.contact@example.com",
-  familyName: "山田",
-  givenName: "太郎",
+  hrid: "20260401",
+  name: "ken.sekiguchi@example.com",
+  email: "ken.sekiguchi@example.com",
+  familyName: "関口",
+  givenName: "賢",
   department: "開発部",
-  position: "メンバー",
-  bio: "現在、フロントエンドの画面挙動をテスト中です。\nバックエンドが繋がるまではこのデータが表示されます。",
-  careerSummary: "2026年 開発プロジェクト参画",
-  wantToDo: "UI/UXの改善",
+  position: "エンジニア",
+  bio: "大学院で情報学を専攻し、LODやセマンティックウェブ技術の研究を行っています。また、添削業務のリーダーとしてチームマネジメントも経験しました。\nユーザー視点を大切にしながら、使いやすいUI実装を目指しています。",
+  careerSummary: "・Javaを用いたバックエンドシステムの開発\n・React/TypeScriptを用いたフロントエンドの実装\n・組織内のワークフロー管理とマニュアル作成",
+  wantToDo: "・モダンなReact（Hooksや状態管理）の実装スキルの向上\n・ゴルフでさらにスコアを伸ばすためのセッティング探求",
   selfTag: [
-    { id: 1, name: "Client First" },
-    { id: 3, name: "React" }
+    { id: 1, name: "React" },
+    { id: 2, name: "Java" },
+    { id: 3, name: "マネジメント" }
   ],
-  // 先ほどの照合テスト用に、dummyPosts.jsonの中にあるIDをいくつか入れておきます
   posts: [
-    { id: "1", title: "ダミー", postTag: [] },
-    { id: "2", title: "ダミー", postTag: [] }
+    { id: "1", title: "ダミー", postTag: [] as { id: number; name: string }[] },
   ]
 };
+
+// 💡 編集モーダル用のタグ一覧
+const AVAILABLE_TAGS = [
+  { id: 1, name: "React" },
+  { id: 2, name: "Java" },
+  { id: 3, name: "マネジメント" },
+  { id: 4, name: "TypeScript" },
+  { id: 5, name: "LOD" },
+];
 
 export default function ProfilePage() {
   const api = useApi();
@@ -53,29 +55,22 @@ export default function ProfilePage() {
     selfTag: [] as { id: number; name: string }[],
   });
 
-  // 🚀 1. 画面表示時にプロフィールを取得
+  //プロフィール取得（モック）
   useEffect(() => {
     const fetchMyProfile = async () => {
       try {
-        // const response = await api.fetch("/api/auth/me");
-        // const data = await response.json();
-        // setCurrentUser(response as Profile);
-
-        // テスト用！！！！！！
         await new Promise(resolve => setTimeout(resolve, 500));
         setCurrentUser(DUMMY_PROFILE);
-
       } catch (error) {
         console.error("プロフィールの取得に失敗しました:", error);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchMyProfile();
   }, [api]);
 
-  // 2. 編集モーダルを開く
+  // 編集モーダル
   const handleOpenEdit = () => {
     if (!currentUser) return;
     setEditForm({
@@ -90,7 +85,7 @@ export default function ProfilePage() {
     setIsEditModalOpen(true);
   };
 
-  // 🚀 3. タグの付け外し処理
+  // タグの付け外し
   const toggleTag = (tag: { id: number; name: string }) => {
     setEditForm((prev) => {
       const isAlreadySelected = prev.selfTag.some((t) => t.id === tag.id);
@@ -102,10 +97,9 @@ export default function ProfilePage() {
     });
   };
 
-  // 🚀 4. 保存してAPIに送信
+  // 保存処理（モック）
   const handleSave = async () => {
     if (!currentUser) return;
-
     try {
       const requestBody: Profile = {
         hrid: currentUser.hrid,
@@ -122,267 +116,299 @@ export default function ProfilePage() {
         posts: currentUser.posts
       };
 
-      // テスト用にコメントアウト！！！！！！！！
-      //await api.sendJson("/api/auth/me", requestBody, { method: "PUT" });
-
       await new Promise(resolve => setTimeout(resolve, 500));
-
       setCurrentUser(requestBody);
       setIsEditModalOpen(false);
-      alert("プロフィールを更新しました！");
-
+      alert("プロフィールを更新しました！（※テスト用）");
     } catch (error) {
       console.error("更新エラー:", error);
-      alert("保存に失敗しました。時間をおいて再度お試しください。");
+      alert("保存に失敗しました。");
     }
   };
 
-  // ⏳ ローディング中
   if (isLoading) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin mb-4 text-simplex-green" />
-        <p className="text-sm font-semibold">ユーザー情報を読み込み中...</p>
-      </div>
+        <div className="h-screen flex flex-col items-center justify-center text-slate-400">
+          <Loader2 className="w-8 h-8 animate-spin mb-4 text-simplex-green" />
+          <p className="text-sm font-semibold">読み込み中...</p>
+        </div>
     );
   }
 
-  // 🚨 取得失敗時
   if (!currentUser) {
     return <div className="p-20 text-center text-slate-500">ユーザー情報の取得に失敗しました。</div>;
   }
 
-  const myPosts = dummyPosts.filter((p) => p.authorId === currentUser.hrid);
+  // 従来通りの投稿一覧の取得処理
+  const myPosts = dummyPosts.slice(0, 3) as any[]; // モックテスト用
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-20 text-simplex-text">
+      <div className="max-w-6xl mx-auto space-y-6 pb-20 text-simplex-text">
 
-      {/* 📌 ヘッダーバー */}
-      <div className="sticky top-0 z-10 bg-simplex-bg/90 backdrop-blur-md border-b border-simplex-border px-8 py-4 flex justify-between items-center -mx-8 px-8 mb-6">
-        <div>
-          <span className="text-[10px] font-bold tracking-widest text-simplex-green uppercase">My Space</span>
-          <h2 className="text-xl font-extrabold mt-0.5">マイプロフィール</h2>
-        </div>
-        <button
-          onClick={handleOpenEdit}
-          className="px-3.5 py-1.5 bg-simplex-surface border border-simplex-border hover:bg-simplex-light transition-colors text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm"
-        >
-          <Edit className="w-4 h-4 opacity-70" />
-          <span>プロフィールを編集</span>
-        </button>
-      </div>
-
-      {/* 📌 メインプロフィールカード */}
-      <div className="bg-simplex-headerBg rounded-2xl p-8 relative overflow-hidden flex items-center gap-8 border border-simplex-border">
-        <div className="absolute right-0 bottom-0 opacity-20 pointer-events-none">
-          <svg width="300" height="150" viewBox="0 0 300 150" className="fill-simplex-green"><path d="M0,150 L50,80 L100,120 L150,50 L200,90 L250,30 L300,100 L300,150 Z" /></svg>
-        </div>
-
-        <div className="w-40 h-40 rounded-full border-4 border-simplex-surface shadow-sm overflow-hidden z-10 bg-simplex-surface">
-          <div className="w-full h-full bg-simplex-light flex items-center justify-center text-simplex-green font-bold text-3xl">
-            {currentUser.familyName ? currentUser.familyName[0] : "U"}
+        {/* 📌 ヘッダーバー */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+          <span className="text-sm text-slate-500 font-medium">
+            ホーム {'>'} 社内のひと {'>'} {currentUser.familyName} {currentUser.givenName}
+          </span>
           </div>
+          <button
+              onClick={handleOpenEdit}
+              className="px-4 py-2 bg-white border border-simplex-border hover:bg-simplex-bg transition-colors text-sm font-bold rounded-lg flex items-center gap-2 shadow-sm text-simplex-text"
+          >
+            <Edit className="w-4 h-4 opacity-70" />
+            プロフィールを編集
+          </button>
         </div>
 
-        <div className="z-10 space-y-4">
-          <div className="flex items-end gap-3">
-            <h1 className="text-3xl font-extrabold">{currentUser.familyName} {currentUser.givenName}</h1>
+        {/* メインプロフィールカード */}
+        <div className="bg-simplex-headerBg rounded-3xl p-10 relative overflow-hidden flex flex-col md:flex-row items-center md:items-start gap-8 border border-simplex-border/50 shadow-sm">
+          {/* 背景の装飾イメージ*/}
+          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
+            <svg width="400" height="200" viewBox="0 0 400 200" className="fill-simplex-green"><path d="M0,200 L50,120 L150,160 L250,80 L350,130 L400,60 L400,200 Z" /></svg>
           </div>
 
-          <div className="flex gap-3">
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-simplex-surface rounded-full text-sm font-bold shadow-sm border border-simplex-border">
-              <Users className="w-4 h-4 opacity-50" /> {currentUser.department}
+          {/* アイコン */}
+          <div className="w-40 h-40 rounded-full border-4 border-white shadow-md overflow-hidden z-10 shrink-0 bg-white">
+            <div className="w-full h-full bg-simplex-light flex items-center justify-center text-simplex-green font-bold text-4xl">
+              {currentUser.familyName ? currentUser.familyName[0] : "U"}
+            </div>
+          </div>
+
+          {/* ユーザー情報 */}
+          <div className="z-10 space-y-5 flex-1 w-full text-center md:text-left">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              {currentUser.familyName} {currentUser.givenName}
+            </h1>
+
+            <div className="flex flex-wrap justify-center md:justify-start gap-3">
+            <span className="flex items-center gap-1.5 px-4 py-1.5 bg-white rounded-full text-sm font-bold shadow-sm border border-simplex-border/50 text-simplex-text">
+              <Building className="w-4 h-4 opacity-50" /> {currentUser.department}
             </span>
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-simplex-surface rounded-full text-sm font-bold shadow-sm border border-simplex-border">
+              <span className="flex items-center gap-1.5 px-4 py-1.5 bg-white rounded-full text-sm font-bold shadow-sm border border-simplex-border/50 text-simplex-text">
               <Briefcase className="w-4 h-4 opacity-50" /> {currentUser.position}
             </span>
-          </div>
-
-          <p className="text-sm leading-relaxed font-medium pt-2 whitespace-pre-wrap max-w-lg">
-            {currentUser.bio}
-          </p>
-        </div>
-      </div>
-
-      {/* 📌 情報カラム */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-simplex-surface border border-simplex-border rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6">
-              <Info className="w-5 h-5" /> 自己紹介 (Bio)
-            </h2>
-            <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap">{currentUser.bio}</p>
-          </div>
-
-          <div className="bg-simplex-surface border border-simplex-border rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6">
-              <Briefcase className="w-5 h-5" /> これまでの経歴
-            </h2>
-            <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap">{currentUser.careerSummary}</p>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="bg-simplex-surface border border-simplex-border rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6">
-              <Award className="w-5 h-5" /> スキル・バッジ
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {currentUser.selfTag?.map((tag) => (
-                <span key={tag.id} className="text-[10px] font-bold px-2.5 py-1 bg-simplex-light border border-simplex-green/10 rounded-md text-simplex-green">
-                  {tag.name}
-                </span>
-              ))}
-              {(!currentUser.selfTag || currentUser.selfTag.length === 0) && (
-                <span className="text-xs opacity-50">タグは未設定です</span>
-              )}
             </div>
-          </div>
 
-          <div className="bg-simplex-surface border border-simplex-border rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6">
-              <Compass className="w-5 h-5 text-simplex-yellow" /> 今後やりたいこと
-            </h2>
-            <p className="text-sm font-bold">{currentUser.wantToDo}</p>
+            <p className="text-sm leading-relaxed font-medium whitespace-pre-wrap max-w-2xl text-slate-700">
+              {currentUser.bio}
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* 📌 投稿一覧（※ダミー） */}
-      <div className="bg-simplex-surface border border-simplex-border rounded-2xl p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6">
-          <FileText className="w-5 h-5" /> 共有ナレッジ ({myPosts.length})
-        </h2>
-        <div className="space-y-3">
-          {myPosts.length > 0 ? myPosts.map((p) => (
-            <div key={p.id} className="p-4 bg-simplex-bg border border-simplex-border rounded-xl flex justify-between items-center group">
-              <div className="min-w-0 flex-1">
-                <h4 className="text-sm font-bold group-hover:text-simplex-green transition-colors cursor-pointer">{p.title}</h4>
+        {/* 2カラムレイアウト部分 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+          {/* 左カラム：基本情報 */}
+          <div className="bg-white border border-simplex-border rounded-3xl p-8 shadow-sm h-fit">
+            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-8 border-b border-simplex-border pb-4">
+              <UserIcon className="w-5 h-5" /> 基本情報
+            </h2>
+
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-slate-100">
+              <span className="text-sm font-bold text-slate-500 w-40 flex items-center gap-2 mb-1 sm:mb-0">
+                <CreditCard className="w-4 h-4" /> 社員番号
+              </span>
+                <span className="text-sm font-semibold text-simplex-text">{currentUser.hrid}</span>
               </div>
-              <span className="text-xs font-mono opacity-50 shrink-0 ml-4">{p.date}</span>
+
+              <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-slate-100">
+              <span className="text-sm font-bold text-slate-500 w-40 flex items-center gap-2 mb-1 sm:mb-0">
+                <Mail className="w-4 h-4" /> メールアドレス
+              </span>
+                <span className="text-sm font-semibold text-simplex-text">{currentUser.email}</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-slate-100">
+              <span className="text-sm font-bold text-slate-500 w-40 flex items-center gap-2 mb-1 sm:mb-0">
+                <Building className="w-4 h-4" /> 部署
+              </span>
+                <span className="text-sm font-semibold text-simplex-text">{currentUser.department}</span>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:items-center py-2">
+              <span className="text-sm font-bold text-slate-500 w-40 flex items-center gap-2 mb-1 sm:mb-0">
+                <Briefcase className="w-4 h-4" /> 職種 (役職)
+              </span>
+                <span className="text-sm font-semibold text-simplex-text">{currentUser.position}</span>
+              </div>
             </div>
-          )) : (
-            <div className="p-8 text-center text-sm opacity-50 border border-dashed border-simplex-border rounded-xl">まだ投稿はありません。</div>
-          )}
+          </div>
+
+          {/* 右カラム：経歴 ＆ やりたいこと */}
+          <div className="space-y-6">
+
+            {/* 経歴 */}
+            <div className="bg-white border border-simplex-border rounded-3xl p-8 shadow-sm">
+              <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6 border-b border-simplex-border pb-4">
+                <FileText className="w-5 h-5" /> 経歴
+              </h2>
+              <div className="text-sm leading-relaxed font-medium text-slate-700 whitespace-pre-wrap pl-2 border-l-2 border-simplex-light">
+                {currentUser.careerSummary || "経歴が未設定です。"}
+              </div>
+            </div>
+
+            {/* 今後やりたいこと */}
+            <div className="bg-white border border-simplex-border rounded-3xl p-8 shadow-sm">
+              <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2 mb-6 border-b border-simplex-border pb-4">
+                <Lightbulb className="w-5 h-5" /> 今後やりたいこと
+              </h2>
+              <div className="text-sm leading-relaxed font-medium text-slate-700 whitespace-pre-wrap pl-2 border-l-2 border-simplex-light">
+                {currentUser.wantToDo || "今後やりたいことが未設定です。"}
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
 
-      {/* 📌 編集モーダル */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-simplex-surface border border-simplex-border rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+        {/* 投稿一覧（※従来のコード） */}
+        <div className="bg-white border border-simplex-border rounded-3xl p-8 shadow-sm">
+          <div className="flex justify-between items-center mb-6 border-b border-simplex-border pb-4">
+            <h2 className="text-lg font-bold text-simplex-green flex items-center gap-2">
+              <FileText className="w-5 h-5" /> 投稿一覧
+            </h2>
+            <button className="text-sm font-bold text-slate-500 hover:text-simplex-green transition-colors">
+              すべての投稿を見る {'>'}
+            </button>
+          </div>
 
-            <div className="px-6 py-4 border-b border-simplex-border flex justify-between items-center bg-simplex-bg/50 shrink-0 rounded-t-2xl">
-              <h3 className="text-sm font-bold flex items-center gap-2">
-                <UserIcon className="w-4.5 h-4.5 text-simplex-green" /> プロフィールの編集
-              </h3>
-              <button onClick={() => setIsEditModalOpen(false)} className="opacity-50 hover:opacity-100 hover:bg-simplex-border p-1.5 rounded-lg transition-all">
-                <X className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-5 overflow-y-auto">
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">姓</label>
-                  <input
-                    type="text"
-                    value={editForm.familyName}
-                    onChange={(e) => setEditForm({...editForm, familyName: e.target.value})}
-                    className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
-                  />
+          <div className="space-y-3">
+            {myPosts.length > 0 ? myPosts.map((p, index) => (
+                <div key={index} className="p-4 bg-simplex-bg border border-simplex-border rounded-xl flex justify-between items-center group">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-bold group-hover:text-simplex-green transition-colors cursor-pointer">{p.title || "投稿タイトル"}</h4>
+                  </div>
+                  <span className="text-xs font-mono opacity-50 shrink-0 ml-4">{p.date || "2026-05-24"}</span>
                 </div>
-                <div className="flex-1">
-                  <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">名</label>
-                  <input
-                    type="text"
-                    value={editForm.givenName}
-                    onChange={(e) => setEditForm({...editForm, givenName: e.target.value})}
-                    className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">ポジション</label>
-                <input
-                  type="text"
-                  value={editForm.position}
-                  onChange={(e) => setEditForm({...editForm, position: e.target.value})}
-                  className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
-                />
-              </div>
-
-              {/* 🚀 タグ選択エリア */}
-              <div>
-                <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">自己紹介タグ（複数選択可）</label>
-                <div className="flex flex-wrap gap-2">
-                  {AVAILABLE_TAGS.map((tag) => {
-                    const isSelected = editForm.selfTag.some((t) => t.id === tag.id);
-                    return (
-                      <button
-                        key={tag.id}
-                        type="button"
-                        onClick={() => toggleTag(tag)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${
-    isSelected
-        ? "bg-simplex-green text-white border-simplex-green shadow-sm"
-        : "bg-simplex-bg text-simplex-text border-simplex-border opacity-60 hover:opacity-100 hover:bg-simplex-surface"
-}`}
-                      >
-                        {tag.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">今後やりたいこと</label>
-                <input
-                  type="text"
-                  value={editForm.wantToDo}
-                  onChange={(e) => setEditForm({...editForm, wantToDo: e.target.value})}
-                  className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">自己紹介 (Bio)</label>
-                <textarea
-                  rows={3}
-                  value={editForm.bio}
-                  onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
-                  className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium resize-none"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-bold opacity-60 uppercase tracking-wider mb-1.5">これまでの経歴</label>
-                <textarea
-                  rows={3}
-                  value={editForm.careerSummary}
-                  onChange={(e) => setEditForm({...editForm, careerSummary: e.target.value})}
-                  className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="px-6 py-4 border-t border-simplex-border flex justify-end gap-3 bg-simplex-bg/50 shrink-0 rounded-b-2xl">
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="px-4 py-2 border border-simplex-border hover:bg-simplex-border text-xs font-bold rounded-lg transition-colors"
-              >
-                キャンセル
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-5 py-2 bg-simplex-green hover:bg-simplex-green/90 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
-              >
-                保存する
-              </button>
-            </div>
-
+            )) : (
+                <div className="p-8 text-center text-sm opacity-50 border border-dashed border-simplex-border rounded-xl">まだ投稿はありません。</div>
+            )}
           </div>
         </div>
-      )}
-    </div>
+
+        {/* 編集モーダル*/}
+        {isEditModalOpen && (
+            // ...（前回のモーダル部分と全く同じ省略せずに配置）
+            <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white border border-simplex-border rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+                {/* モーダルヘッダー */}
+                <div className="px-6 py-5 border-b border-simplex-border flex justify-between items-center bg-simplex-bg shrink-0 rounded-t-3xl">
+                  <h3 className="text-sm font-bold flex items-center gap-2">
+                    <UserIcon className="w-4.5 h-4.5 text-simplex-green" /> プロフィールの編集
+                  </h3>
+                  <button onClick={() => setIsEditModalOpen(false)} className="opacity-50 hover:opacity-100 hover:bg-simplex-border p-1.5 rounded-lg transition-all">
+                    <X className="w-4.5 h-4.5" />
+                  </button>
+                </div>
+
+                {/* モーダルボディ */}
+                <div className="p-6 space-y-5 overflow-y-auto">
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5">姓</label>
+                      <input
+                          type="text"
+                          value={editForm.familyName}
+                          onChange={(e) => setEditForm({...editForm, familyName: e.target.value})}
+                          className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5">名</label>
+                      <input
+                          type="text"
+                          value={editForm.givenName}
+                          onChange={(e) => setEditForm({...editForm, givenName: e.target.value})}
+                          className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5">職種 (ポジション)</label>
+                    <input
+                        type="text"
+                        value={editForm.position}
+                        onChange={(e) => setEditForm({...editForm, position: e.target.value})}
+                        className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5">自己紹介 (Bio)</label>
+                    <textarea
+                        rows={3}
+                        value={editForm.bio}
+                        onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+                        className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5">経歴</label>
+                    <textarea
+                        rows={3}
+                        value={editForm.careerSummary}
+                        onChange={(e) => setEditForm({...editForm, careerSummary: e.target.value})}
+                        className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5">今後やりたいこと</label>
+                    <textarea
+                        rows={2}
+                        value={editForm.wantToDo}
+                        onChange={(e) => setEditForm({...editForm, wantToDo: e.target.value})}
+                        className="w-full px-3 py-2 border border-simplex-border bg-simplex-bg rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/50 text-sm font-medium resize-none"
+                    />
+                  </div>
+
+                  {/* タグ選択 */}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 mb-1.5">自己紹介タグ</label>
+                    <div className="flex flex-wrap gap-2">
+                      {AVAILABLE_TAGS.map((tag) => {
+                        const isSelected = editForm.selfTag.some((t) => t.id === tag.id);
+                        return (
+                            <button
+                                key={tag.id}
+                                type="button"
+                                onClick={() => toggleTag(tag)}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                                    isSelected
+                                        ? "bg-simplex-green text-white border-simplex-green shadow-sm"
+                                        : "bg-white text-simplex-text border-simplex-border hover:bg-simplex-bg"
+                                }`}
+                            >
+                              {tag.name}
+                            </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* モーダルフッター */}
+                <div className="px-6 py-5 border-t border-simplex-border flex justify-end gap-3 bg-simplex-bg shrink-0 rounded-b-3xl">
+                  <button
+                      onClick={() => setIsEditModalOpen(false)}
+                      className="px-5 py-2 border border-simplex-border bg-white hover:bg-simplex-border text-sm font-bold rounded-lg transition-colors text-simplex-text"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                      onClick={handleSave}
+                      className="px-5 py-2 bg-simplex-green hover:bg-simplex-green/90 text-white text-sm font-bold rounded-lg shadow-sm transition-colors"
+                  >
+                    保存する
+                  </button>
+                </div>
+
+              </div>
+            </div>
+        )}
+      </div>
   );
 }
