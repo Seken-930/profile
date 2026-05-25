@@ -1,98 +1,101 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
-import { Search, ChevronRight, Compass } from "lucide-react";
-import dummyUsers from "../data/dummyUsers.json";
-import dummyPosts from "../data/dummyPosts.json";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { BookOpen, UserCircle, ArrowRight, MessageSquare } from "lucide-react";
 
 export default function HomePage() {
     const navigate = useNavigate();
-    const [searchQuery, setSearchQuery] = useState("");
-
-    const filteredPosts = dummyPosts.filter((post) => {
-        const q = searchQuery.toLowerCase();
-        return post.title.toLowerCase().includes(q) || post.tags.some(t => t.toLowerCase().includes(q));
-    });
 
     return (
-        <div className="pb-20">
-            <div className="sticky top-0 z-10 bg-simplex-bg/80 border-b border-slate-200/60 px-8 py-4 glass-panel">
-                <div className="max-w-5xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <span className="text-[10px] font-bold tracking-widest text-simplex-green uppercase">Knowledge Base</span>
-                        <h2 className="text-xl font-extrabold text-slate-900 mt-0.5">ホームフィード</h2>
+        <div className="max-w-5xl mx-auto space-y-12 pb-20 text-simplex-text dark:text-slate-200 transition-colors duration-300">
+
+            {/*上部：ヒーローセクション（アプリの説明） */}
+            <div className="bg-simplex-headerBg dark:bg-slate-900 rounded-[3rem] p-16 md:p-24 relative overflow-hidden border border-simplex-border dark:border-slate-800 shadow-sm text-center transition-colors">
+
+                {/* 背景装飾 */}
+                <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none flex justify-center items-center">
+                    <svg width="100%" height="100%" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="150" fill="#2A7A56" />
+                        <circle cx="700" cy="300" r="200" fill="#F4B728" />
+                    </svg>
+                </div>
+
+                <div className="relative z-10 flex flex-col items-center">
+                    <div className="w-20 h-20 bg-simplex-green dark:bg-emerald-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-lg transform -rotate-3 transition-colors">
+                        <MessageSquare className="w-10 h-10 fill-white/20" />
                     </div>
-                    <div className="relative w-full md:w-80">
-            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-              <Search className="w-4 h-4" />
-            </span>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="知見、キーワード、タグを検索..."
-                            className="w-full pl-9 pr-4 py-2 border border-slate-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-simplex-green/20 focus:border-simplex-green text-xs text-simplex-text transition-all shadow-sm"
-                        />
-                    </div>
+
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white mb-6 transition-colors">
+                        Simplex Blog
+                    </h1>
+
+                    <p className="text-base md:text-lg text-simplex-text dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-bold transition-colors">
+                        社内の知見を共有し、コミュニケーションを活性化するプラットフォーム。<br className="hidden md:block" />
+                        日々の気づきや技術的な学びを記録し、みんなで成長を分かち合いましょう。
+                    </p>
                 </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-8 mt-6 space-y-8">
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">最新の共有知見</h3>
-                        {searchQuery && (
-                            <span className="text-[10px] font-semibold text-simplex-green bg-simplex-light px-2 py-0.5 rounded-full">
-                {filteredPosts.length}件一致
-              </span>
-                        )}
+            {/* 下部：ナビゲーションカード（2カラム） */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+
+                {/* 左側：投稿一覧へ促すカード */}
+                <div
+                    onClick={() => navigate("/posts")}
+                    className="group bg-white dark:bg-slate-900 border border-simplex-border dark:border-slate-800 rounded-3xl p-10 cursor-pointer hover:border-simplex-green dark:hover:border-emerald-500 hover:shadow-lg transition-all relative overflow-hidden flex flex-col h-full"
+                >
+                    {/* 背景の透かしアイコン */}
+                    <div className="absolute -right-8 -bottom-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <BookOpen className="w-64 h-64 text-simplex-green dark:text-emerald-500" />
                     </div>
 
-                    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm divide-y divide-slate-100">
-                        {filteredPosts.length > 0 ? (
-                            filteredPosts.map((post) => {
-                                const author = dummyUsers.find((u) => u.id === post.authorId);
-                                return (
-                                    <div
-                                        key={post.id}
-                                        onClick={() => navigate(`/post/${post.id}`)}
-                                        className="group flex items-center justify-between p-4 hover:bg-simplex-bg/50 cursor-pointer transition-all duration-200 relative overflow-hidden"
-                                    >
-                                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-simplex-green scale-y-0 group-hover:scale-y-100 transition-transform origin-center duration-200"></div>
+                    <div className="relative z-10 flex flex-col h-full">
+                        <div className="w-14 h-14 bg-simplex-light dark:bg-emerald-900/30 text-simplex-green dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-6 transition-colors">
+                            <BookOpen className="w-7 h-7" />
+                        </div>
 
-                                        <div className="flex items-center gap-4 min-w-0 flex-1 pl-2">
-                                            <div className="text-xs font-bold text-slate-900 truncate flex-1 group-hover:text-simplex-green transition-colors">
-                                                {post.title}
-                                            </div>
-                                            <div className="flex items-center gap-2.5 w-40 shrink-0 pl-4 border-l border-slate-100 hidden md:flex">
-                                                <div className="w-7 h-7 rounded-full bg-slate-100 overflow-hidden shadow-inner flex items-center justify-center">
-                                                    {author ? <img src={author.avatar_url} alt="icon" className="w-full h-full object-cover" /> : "👤"}
-                                                </div>
-                                                <span className="text-xs font-bold text-slate-700 truncate">{author?.name}</span>
-                                            </div>
-                                        </div>
+                        <h2 className="text-2xl font-extrabold mb-4 text-slate-900 dark:text-white group-hover:text-simplex-green dark:group-hover:text-emerald-400 transition-colors">
+                            みんなの知見を探す
+                        </h2>
 
-                                        <div className="flex items-center gap-6 shrink-0 pl-4">
-                                            <div className="flex gap-1 hidden md:flex w-44 justify-end overflow-hidden">
-                                                {post.tags.map(tag => (
-                                                    <span key={tag} className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-simplex-light text-simplex-green border border-simplex-green/10">
-                            {tag}
-                          </span>
-                                                ))}
-                                            </div>
-                                            <div className="text-[10px] font-mono text-slate-400 w-20 text-right">{post.date}</div>
-                                            <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-simplex-green transition-colors" />
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <div className="p-12 text-center text-slate-400">
-                                <Compass className="w-8 h-8 mx-auto mb-2 text-slate-300" />
-                                <p className="text-xs font-semibold">該当する知見が見つかりませんでした</p>
-                            </div>
-                        )}
+                        <p className="text-slate-600 dark:text-slate-400 font-medium mb-8 leading-relaxed flex-1">
+                            最新の投稿や気になるタグから、社内のアイデアや技術情報に触れてみましょう。新しい発見がきっとあります。
+                        </p>
+
+                        <div className="flex items-center text-sm font-extrabold text-simplex-green dark:text-emerald-400 gap-2 group-hover:translate-x-2 transition-transform mt-auto">
+                            投稿一覧を見る <ArrowRight className="w-4 h-4" />
+                        </div>
                     </div>
                 </div>
+
+                {/* 右側：プロフィール作成へ促すカード */}
+                <div
+                    onClick={() => navigate("/profile")}
+                    className="group bg-white dark:bg-slate-900 border border-simplex-border dark:border-slate-800 rounded-3xl p-10 cursor-pointer hover:border-simplex-yellow dark:hover:border-yellow-500 hover:shadow-lg transition-all relative overflow-hidden flex flex-col h-full"
+                >
+                    {/* 背景の透かしアイコン */}
+                    <div className="absolute -right-8 -bottom-8 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <UserCircle className="w-64 h-64 text-simplex-yellow dark:text-yellow-500" />
+                    </div>
+
+                    <div className="relative z-10 flex flex-col h-full">
+                        <div className="w-14 h-14 bg-orange-50 dark:bg-yellow-900/20 text-simplex-yellow dark:text-yellow-500 rounded-2xl flex items-center justify-center mb-6 transition-colors">
+                            <UserCircle className="w-7 h-7" />
+                        </div>
+
+                        <h2 className="text-2xl font-extrabold mb-4 text-slate-900 dark:text-white group-hover:text-simplex-yellow dark:group-hover:text-yellow-400 transition-colors">
+                            自分を知ってもらう
+                        </h2>
+
+                        <p className="text-slate-600 dark:text-slate-400 font-medium mb-8 leading-relaxed flex-1">
+                            プロフィールを充実させて、得意なスキルや今後やりたいことをアピールしましょう。同じ興味を持つ仲間が見つかります。
+                        </p>
+
+                        <div className="flex items-center text-sm font-extrabold text-simplex-yellow dark:text-yellow-500 gap-2 group-hover:translate-x-2 transition-transform mt-auto">
+                            プロフィールを編集する <ArrowRight className="w-4 h-4" />
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
