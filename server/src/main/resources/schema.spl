@@ -1,0 +1,23 @@
+-- 1. ユーザーテーブル
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+-- 2. 本テーブル (貸出中フラグを持つ)
+CREATE TABLE books (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    is_borrowed BOOLEAN DEFAULT FALSE NOT NULL
+);
+
+-- 3. 貸出履歴テーブル (中間テーブル)
+CREATE TABLE borrow_histories (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    borrowed_at DATETIME NOT NULL,
+    returned_at DATETIME DEFAULT NULL, -- NULLなら現在貸出中
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
