@@ -97,6 +97,58 @@ export default function ProfilePage() {
     });
   };
 
+  // 保存処理
+  const handleSave = async () => {
+    if (!currentUser) return;
+
+    try {
+      // 基本情報用のリクエストボディ（selfTagを含めない）
+      const profileRequestBody = {
+        hrid: currentUser.hrid,
+        name: currentUser.name,
+        email: currentUser.email,
+        department: currentUser.department,
+        familyName: editForm.familyName,
+        givenName: editForm.givenName,
+        position: editForm.position,
+        bio: editForm.bio,
+        careerSummary: editForm.careerSummary,
+        wantToDo: editForm.wantToDo,
+        posts: currentUser.posts
+      };
+
+      // タグ更新用のリクエストボディ（APIの仕様に合わせて形を変えてください）
+      const tagsRequestBody = {
+        hrid: currentUser.hrid,
+        tags: editForm.selfTag
+      };
+
+      // つのAPIリクエストを並行して送信する（Promise.allを使用）
+      await Promise.all([
+        // 例: 基本情報を更新するAPI
+        // api.put('/users/profile', profileRequestBody),
+        new Promise(resolve => setTimeout(resolve, 300)),
+
+        // 例: タグ情報を更新するAPI
+        // api.put('/users/tags', tagsRequestBody)
+        new Promise(resolve => setTimeout(resolve, 300))
+      ]);
+
+      // フロントエンドの表示（State）を更新
+      setCurrentUser({
+        ...profileRequestBody,
+        selfTag: editForm.selfTag // 画面表示用にタグを結合
+      });
+
+      setIsEditModalOpen(false);
+      alert("プロフィールとタグを更新しました！");
+
+    } catch (error) {
+      console.error("更新エラー:", error);
+      alert("保存に失敗しました。");
+    }
+  };
+
   // 保存処理（モック）
   const handleSave = async () => {
     if (!currentUser) return;
