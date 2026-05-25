@@ -1,8 +1,65 @@
-flex と fixed:
-メニューバーを fixed（固定）にすることで、右側のコンテンツが長くてもメニューは常に左側に表示され続けます。その分、メインコンテンツには ml-64（サイドバーの幅分だけ左に余白を空ける）を設定して重ならないようにしています。
+① 画面を作る（フロントエンド：React）
+ユーザーが直接目にする画面と、ボタンを押したときの動きを担当します。
 
-useLocation:
-現在どのページにいるかを自動で判定しています。今見ているページのボタンだけ背景色が変わる（variant="secondary"）ようになっているので、ユーザーが迷子になりません。
+App.jsx: アプリ全体の土台（親玉）。
 
-Lucide React:
-lucide-react というライブラリのアイコンを使っています（Viteの初期設定で入っていることが多いですが、もしエラーが出たら npm install lucide-react を実行してください）。
+BookList.jsx: 本の一覧画面。ボタンが押されたらバックエンドに「貸して！」「返して！」と通信（リクエスト）を送ります。
+
+② 案内窓口と中身の処理（バックエンド：Spring Boot）
+画面からの通信を受け取り、ルール（ビジネスロジック）に従って処理します。
+
+BookController.java: 外側の世界（React）との窓口。URL（/api/books/...）に応じて、適切な処理に案内します。
+
+BookService.java: アプリの頭脳（心臓部）。「貸出中ならエラーにする」「本を貸出中にし、同時に履歴を作る」といった一番重要なルールを実行します。
+
+③ DBとの通訳・データの形（データ層：JPA）
+プログラムのオブジェクトと、データベースのテーブルを繋ぐ架け橋です。
+
+User.java, Book.java, BorrowHistory.java (Entity): Java側で扱う「データの形」の定義。DBのテーブルと1対1で対応しています。
+
+UserRepository.java, BookRepository.java, BorrowHistoryRepository.java (Repository): DBに対して「検索して」「保存して」と命令を出すための道具です。JPAが自動でSQLを作ってくれます。
+
+④ データの保管庫（データベース：SQL）
+実際にデータが保存される場所です。
+
+schema.sql: テーブル（引き出し）を作るための設計図。
+
+data.sql: 最初に最初から入れておくテストデータ。
+
+2. データが流れる具体的な「バケツリレー」の流れ
+例えば、ユーザーが画面で「本を借りる」ボタンを押したとき、ファイル間をデータが以下のように駆け巡ります。
+
+Plaintext
+【React（画面）】
+  1. BookList.jsx の「借りる」ボタンを押す
+  2. fetch() で「URL: /api/books/1/borrow」へ通信を送る
+         ↓ （ネットワークを渡る）
+【Spring Boot（サーバー）】
+  3. BookController が「お、貸出のリクエストが来たな」と窓口で受け取る
+  4. BookController から BookService の borrowBook() メソッドを呼び出す
+  5. BookService がビジネスルールをチェック（本当にその本はあるか？貸出中じゃないか？）
+  6. BookService が各種 Repository（BookRepository / BorrowHistoryRepository）に指令を出す
+  7. Repository が自動的に SQL を組み立てる
+         ↓
+【データベース（DB）】
+  8. books テーブルのフラグが「貸出中(true)」に更新される
+  9. borrow_histories テーブルに「誰がいつ借りたか」のレコードが挿入される
+         ↓
+【完了の返事】
+  10. DBから「成功したよ」とService→Controllerへと返事が戻り、最終的にReactへ200 OK（成功）が返る
+  11. BookList.jsx がそれを受け取り、画面の表示を「貸出中」に書き換える
+このように、1つのアクションに対してそれぞれのファイルが専用の役割を全うすることで、安全にデータが管理されます。
+
+各ファイルのつながりや、ボタンを押したときにどこがどう動くのかを視覚的に切り替えて確認できるシミュレーターを用意しました。実際にアクションを選んで、どのファイルが連携しているのか確認してみてください。
+
+
+buil.gradle.ktsにJPAを追加
+dependencies {
+    // ... (他のパーツ)
+
+    // JPAの追加
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+    // データベース(H2)の追加
+    runtimeOnly("com.h2database:h2")
+}
